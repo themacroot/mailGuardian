@@ -1,7 +1,5 @@
 package com.sreekanth.mailGuardian.controller;
 
-import java.net.UnknownHostException;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,7 +8,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.xbill.DNS.TextParseException;
 
 import com.sreekanth.mailGuardian.models.RiskCalculateInput;
 import com.sreekanth.mailGuardian.models.RiskCalculatedOutput;
@@ -33,7 +30,7 @@ public class Serve {
 //	}
 
 	@GetMapping(value = "/email/{id}", produces = "application/json")
-	public @ResponseBody RiskCalculatedOutput getScore(HttpServletRequest req, @PathVariable String id) throws IllegalStateException, UnknownHostException, TextParseException {
+	public @ResponseBody RiskCalculatedOutput getScore(HttpServletRequest req, @PathVariable String id) throws Exception {
 
 		logger.info("Request from IP --> " + req.getRemoteAddr() + "| With session --> " + req.getSession().getId()
 				+ "| Request body --> " + id);

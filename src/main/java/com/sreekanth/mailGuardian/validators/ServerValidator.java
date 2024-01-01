@@ -7,7 +7,8 @@ import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
-
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.net.whois.WhoisClient;
 import org.springframework.stereotype.Service;
 import org.xbill.DNS.ARecord;
 import org.xbill.DNS.Lookup;
@@ -15,6 +16,9 @@ import org.xbill.DNS.MXRecord;
 import org.xbill.DNS.Record;
 import org.xbill.DNS.TextParseException;
 import org.xbill.DNS.Type;
+
+import ch.qos.logback.core.recovery.ResilientSyslogOutputStream;
+
 import org.xbill.DNS.Resolver;
 import org.xbill.DNS.SimpleResolver;
 import org.xbill.DNS.TXTRecord;
@@ -22,8 +26,9 @@ import org.xbill.DNS.TXTRecord;
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Hashtable;
-
+import com.sreekanth.mailGuardian.utils.DateUtil;
 /**
  * The ServerValidator class provides methods to validate and check various
  * aspects related to email servers and DNS records.
@@ -164,6 +169,34 @@ public class ServerValidator {
 		return false;
 	}
 
+	public boolean getMXRecords(String domain) throws IllegalStateException, UnknownHostException {
+		try {
+
+			Resolver resolver = new SimpleResolver();
+			Lookup lookup = new Lookup(domain, Type.MX);
+			Record[] result = lookup.run();
+			lookup.setResolver(resolver);
+			if (lookup.getResult() == Lookup.TRY_AGAIN) {
+				throw new IllegalStateException();
+			}
+			if (result != null && result.length > 0) {
+				for (Record r : result) {
+					System.out.println("Loop 1 : " + r.toString());
+					MXRecord mx = (MXRecord) r;
+					Record[] result2 = new Lookup(mx.getTarget(), Type.A).run();
+
+					for (Record rec : result2) {
+						System.out.println("Loop 2 : " + rec.toString());
+					}
+				}
+			}
+		} catch (TextParseException e) {
+			e.printStackTrace();
+		}
+		// System.err.println("Fail: not mx record for " + domain + " found");
+		return false;
+	}
+
 	/**
 	 * Checks if an ANY record exists for the specified domain.
 	 *
@@ -180,7 +213,7 @@ public class ServerValidator {
 
 			Resolver resolver = new SimpleResolver();
 
-			Lookup lookup = new Lookup(domain, Type.ANY);
+			Lookup lookup = new Lookup(domain, Type.TXT);
 
 			Record[] result = lookup.run();
 			lookup.setResolver(resolver);
@@ -239,11 +272,11 @@ public class ServerValidator {
 	 *                              determined.
 	 */
 
-	public static boolean doesSPFRecordExist(String domain) throws TextParseException, UnknownHostException {
+	public boolean doesSPFRecordExist(String domain) throws TextParseException, UnknownHostException {
 		String spfRecord = null;
 
 		// Perform the DNS query
-		Record[] records = new Lookup(  domain, Type.TXT).run();
+		Record[] records = new Lookup(domain, Type.TXT).run();
 
 		if (records != null) {
 			for (Record record : records) {
@@ -257,43 +290,23 @@ public class ServerValidator {
 		return false;
 	}
 
-	/**
-	 * Checks if a mailbox may exist for the given email address.
-	 *
-	 * @param address The email address to check.
-	 * @return {@code true} if the mailbox may exist, {@code false} otherwise.
-	 */
+	public static final String WHOIS_SERVER = "whois.internic.net";
+	public static final int WHOIS_PORT = 43;
 
-	public boolean mayMailboxExist(String address) {
+	public boolean creationbeforeXYears(String domain,int x) throws Exception {
 
-		// Find the separator for the domain name
-		int pos = address.indexOf('@');
+		WhoisClient whoisClient = new WhoisClient();
+		whoisClient.connect(WHOIS_SERVER, WHOIS_PORT);
+		String results = whoisClient.query(domain);
+		whoisClient.disconnect();
+		String res[] = results.split("URL of the ICANN");
+		String reqData[] = res[0].toString().split("\n");
+		String vectorize[] = reqData[5].toString().split(" ");
+		System.out.println(vectorize[5].toString());
+		Date creationDate = DateUtil.parseDateString(vectorize[5].toString());
+		return  !DateUtil.isWithinXYears(creationDate,x);
 
-		// If the address does not contain an '@', it's not valid
-		if (pos == -1)
-			return false;
-
-		// Isolate the domain/machine name and get a list of mail exchangers
-		String domain = address.substring(++pos);
-		ArrayList mxList = null;
-		try {
-			mxList = getMX(domain);
-		} catch (CommunicationException ce) {
-			System.out.println("[mail validation] got dns problems email=" + address + ce);
-			return true;
-		} catch (NamingException ex) {
-			System.out.println("[mail validation] got host naming exception for email=" + address + " - " + ex);
-			return false;
-		}
-
-		// if we do not find an mx, we beleve the adress anyway
-		if (mxList.size() == 0)
-			return true;
-
-		// modification, SMa: mx only use the first mx
-		int mx = 0;
-
-		return true;
+		
 	}
 
 }

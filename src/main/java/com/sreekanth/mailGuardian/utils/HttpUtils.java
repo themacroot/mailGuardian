@@ -29,6 +29,7 @@ public class HttpUtils {
 	 *                     stream.
 	 */
 	@SuppressWarnings("unused")
+	public
 	int hear(BufferedReader in) throws IOException {
 		String line = null;
 		int res = 0;
@@ -58,6 +59,7 @@ public class HttpUtils {
 	 *                     stream.
 	 */
 	@SuppressWarnings("unused")
+	public
 	void say(BufferedWriter wr, String text) throws IOException {
 		// Write the text to the output stream and flush the BufferedWriter
 		wr.write(text + "\r\n");

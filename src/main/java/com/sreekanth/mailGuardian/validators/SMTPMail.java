@@ -1,4 +1,4 @@
-package com.sreekanth.mailGuardian.utils;
+package com.sreekanth.mailGuardian.validators;
 
 
 import java.io.BufferedReader;
@@ -14,11 +14,8 @@ import org.xbill.DNS.Record;
 
 import com.sreekanth.mailGuardian.models.SMTPConnectInput;
 import com.sreekanth.mailGuardian.models.SMTPConnectOutput;
-
+import com.sreekanth.mailGuardian.utils.HttpUtils;
 import com.sreekanth.mailGuardian.enums.AddressStatus;
-
-import com.sreekanth.mailGuardian.validators.ServerValidator;
-import com.sreekanth.mailGuardian.validators.SmtpResponseValidators;
 
 // Tool set for verifying email address using  DNS util from xbill. 
 @SuppressWarnings("deprecation")
@@ -78,13 +75,6 @@ public final class SMTPMail {
 			
 			System.out.println("Sending Reciever Email  ....");
 			hu.say(wtr, "RCPT TO: <" + ip.getAddress() + ">");
-			res = hu.hear(rdr);
-			System.out.println("Connection Response is " + res + " corresponds to "
-					+ SmtpResponseValidators.whatsTheStatus(res) + " .");
-
-			
-			System.out.println("Sending Verify Command  ....");
-			hu.say(wtr, "VRFY " + ip.getFromDomain());
 			res = hu.hear(rdr);
 			System.out.println("Connection Response is " + res + " corresponds to "
 					+ SmtpResponseValidators.whatsTheStatus(res) + " .");

@@ -1,5 +1,7 @@
 package com.sreekanth.mailGuardian.models;
 
+
+
 public class SMTPConnectInput {
 
 	String address;
@@ -7,6 +9,22 @@ public class SMTPConnectInput {
 	String fromEmail;
 	String fromDomain;
 	String mxAddr;
+	
+
+	
+	
+	
+	public SMTPConnectInput(String address, String domain, String fromEmail, String fromDomain, String mxAddr) {
+		super();
+		this.address = address;
+		this.domain = domain;
+		this.fromEmail = fromEmail;
+		this.fromDomain = fromDomain;
+		this.mxAddr = mxAddr;
+	}
+	public SMTPConnectInput() {
+		// TODO Auto-generated constructor stub
+	}
 	/**
 	 * @return the address
 	 */

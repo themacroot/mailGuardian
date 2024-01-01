@@ -13,7 +13,7 @@ class ServerValidatorTest {
 
 	ServerValidator serverValidator = new ServerValidator();
 	String invalidEmail = "";
-	String validEmail = "cazlq.com";
+	String validEmail = "google.com";
 	String exceptionEmail = "";
 
 	@Test
@@ -129,10 +129,9 @@ class ServerValidatorTest {
 		assertFalse(mxRecords);
 
 	}
-	
+
 	@Test
-	public void testdoesRecordExist()
-			throws NamingException, IllegalStateException, UnknownHostException {
+	public void testdoesRecordExist() throws NamingException, IllegalStateException, UnknownHostException {
 
 		// Act
 		@SuppressWarnings("unchecked")
@@ -140,6 +139,30 @@ class ServerValidatorTest {
 
 		// Assert
 		assertFalse(mxRecords);
+
+	}
+
+	@Test
+	public void testgetMXRecord() throws NamingException, IllegalStateException, UnknownHostException {
+
+		// Act
+		@SuppressWarnings("unchecked")
+		boolean mxRecords = serverValidator.getMXRecords(validEmail);
+
+		// Assert
+		assertFalse(mxRecords);
+
+	}
+
+	@Test
+	public void testwhoisit() throws Exception {
+
+		// Act
+		@SuppressWarnings("unchecked")
+		boolean mxRecords = serverValidator.creationbeforeXYears(validEmail, 4);
+		System.out.println(mxRecords);
+		// Assert
+		assertFalse(false);
 
 	}
 
@@ -181,7 +204,7 @@ class ServerValidatorTest {
 			fail("Exception thrown: " + e.getMessage());
 		}
 	}
-	
+
 	@Test
 	public void testdoesSPFRecordExist() {
 

@@ -1,15 +1,17 @@
 package com.sreekanth.mailGuardian.services;
 
-import java.net.UnknownHostException;
+import java.util.ArrayList;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.xbill.DNS.TextParseException;
 
 import com.sreekanth.mailGuardian.models.RiskCalculateInput;
 import com.sreekanth.mailGuardian.models.RiskCalculatedOutput;
+import com.sreekanth.mailGuardian.models.SMTPConnectInput;
+import com.sreekanth.mailGuardian.models.SMTPConnectOutput;
+import com.sreekanth.mailGuardian.validators.SMTPMail;
 import com.sreekanth.mailGuardian.validators.ServerValidator;
 import com.sreekanth.mailGuardian.validators.SyntaxValidator;
 
@@ -29,7 +31,7 @@ public class FindScore {
 
 	RiskCalculatedOutput op = new RiskCalculatedOutput();
 
-	public RiskCalculatedOutput findRiskScore(RiskCalculateInput ip) throws IllegalStateException, UnknownHostException, TextParseException {
+	public RiskCalculatedOutput findRiskScore(RiskCalculateInput ip) throws Exception {
 
 		if (SyntaxValidator.isEmailSyntaxValid(ip.getEmail())) {
 			op.setScore(10);
@@ -56,11 +58,24 @@ public class FindScore {
 			return op;
 
 		}
-		
-		if (sv.doesMXRecordExist(ip.getDomain())) {
 
+		if (sv.doesMXRecordExist(ip.getDomain())) {
+			SMTPConnectInput smtpci = new SMTPConnectInput();
+			SMTPConnectOutput smtpco = new SMTPConnectOutput();
 			op.increaseScore(10);
 			op.addRemarks("MX Record Exists");
+
+			ArrayList mxList = null;
+			mxList = sv.getMX(ip.getDomain().toString());
+			smtpci.setAddress(ip.getEmail());
+			smtpci.setDomain(ip.getDomain());
+			smtpci.setFromEmail("themacroot@gmail.com");
+			smtpci.setFromDomain("gmail.com");
+			smtpci.setMxAddr(mxList.get(0).toString());
+			SMTPMail smtpMail = new SMTPMail();
+			smtpco = smtpMail.ConnecttoSMTP(smtpci);
+			op.increaseScore(10);
+			op.setRemarks(smtpco.getServerResponse());
 
 		} else {
 
@@ -71,7 +86,7 @@ public class FindScore {
 			return op;
 
 		}
-		
+
 		if (sv.doesDmarcRecordExist(ip.getDomain())) {
 
 			op.increaseScore(10);
@@ -81,13 +96,35 @@ public class FindScore {
 
 			op.decreaseScore(10);
 			op.setRemarks("No DMARC Record Exists");
-			op.setStatus("Failed");
-			op.setComments("Decline");
 			return op;
 
 		}
-		
-		
+
+		if (sv.doesSPFRecordExist(ip.getDomain())) {
+
+			op.increaseScore(10);
+			op.addRemarks("SPFR Record Exists");
+
+		} else {
+
+			op.decreaseScore(10);
+			op.setRemarks("No SPFR Record Exists");
+			return op;
+
+		}
+
+		if (sv.creationbeforeXYears(ip.getDomain(), 4)) {
+
+			op.increaseScore(10);
+			op.addRemarks("Domain created before 4 years");
+
+		} else {
+
+			op.decreaseScore(10);
+			op.setRemarks("Domain Creted within 4 Years, chances of burner bomain");
+			return op;
+
+		}
 
 		if (trieSearchService.searchInTrieSpam(ip.getDomain())) {
 
@@ -110,6 +147,8 @@ public class FindScore {
 			return op;
 		}
 
+		op.setStatus("Success");
+		op.setComments("Success");
 		return op;
 		// String result = trieSearchService.searchInTrieSpam(ip.getDomain());
 		// System.out.println(result);
