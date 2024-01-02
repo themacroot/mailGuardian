@@ -1,6 +1,5 @@
 package com.sreekanth.mailGuardian.validators;
 
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.InputStreamReader;
@@ -15,14 +14,14 @@ import org.xbill.DNS.Record;
 import com.sreekanth.mailGuardian.models.SMTPConnectInput;
 import com.sreekanth.mailGuardian.models.SMTPConnectOutput;
 import com.sreekanth.mailGuardian.utils.HttpUtils;
+import com.sreekanth.mailGuardian.utils.YahooCheck;
 import com.sreekanth.mailGuardian.enums.AddressStatus;
 
 // Tool set for verifying email address using  DNS util from xbill. 
 @SuppressWarnings("deprecation")
 public final class SMTPMail {
-	
-	
-	//(String) mxList.get(mx) == mxAddr
+
+	// (String) mxList.get(mx) == mxAddr
 	public static SMTPConnectOutput ConnecttoSMTP(SMTPConnectInput ip) {
 		HttpUtils hu = new HttpUtils();
 		SMTPConnectOutput smtpCO = new SMTPConnectOutput();
@@ -43,8 +42,7 @@ public final class SMTPMail {
 				skt.close();
 				throw new Exception("Invalid header");
 			}
-			
-			
+
 			System.out.println("Sending EHLO (Extension Hello)  ....");
 			hu.say(wtr, "EHLO " + ip.getFromDomain());
 			res = hu.hear(rdr);
@@ -57,8 +55,7 @@ public final class SMTPMail {
 				skt.close();
 				throw new Exception("Not ESMTP");
 			}
-			
-			
+
 			System.out.println("Sending Sender Email  ....");
 			hu.say(wtr, "MAIL FROM: <" + ip.getFromEmail() + ">");
 			res = hu.hear(rdr);
@@ -71,16 +68,29 @@ public final class SMTPMail {
 				skt.close();
 				throw new Exception("Sender rejected");
 			}
-			
-			
+
 			System.out.println("Sending Reciever Email  ....");
 			hu.say(wtr, "RCPT TO: <" + ip.getAddress() + ">");
 			res = hu.hear(rdr);
 			System.out.println("Connection Response is " + res + " corresponds to "
 					+ SmtpResponseValidators.whatsTheStatus(res) + " .");
-			
-			
-			//Resetting and Closing Connections
+
+			if (ip.getDomain().contains("yahoo")) {
+				String uname[] = ip.getAddress().split("@");
+				if (YahooCheck.checkYahoo(uname[0])) {
+					smtpCO.setStatus("Success");
+					smtpCO.setAction("Terminate");
+					smtpCO.setServerResponse("Email Service exists and is deliverable");
+					System.out.println(smtpCO.toString() + " for the address " + ip.getAddress());
+				} else {
+					smtpCO.setStatus("Failure");
+					smtpCO.setAction("Terminate");
+					smtpCO.setServerResponse("Email service exists, user not verified");
+					System.out.println(smtpCO.toString() + " for the address " + ip.getAddress());
+					return smtpCO;
+				}
+			}
+			// Resetting and Closing Connections
 			hu.say(wtr, "RSET");
 			hu.hear(rdr);
 			hu.say(wtr, "QUIT");
@@ -91,55 +101,29 @@ public final class SMTPMail {
 			skt.close();
 
 			if (res == 550) {
-				
+
 				smtpCO.setStatus("Failure");
 				smtpCO.setAction("Terminate");
-				smtpCO.setServerResponse(SmtpResponseValidators.whatsTheStatus(res));
-				System.out.println(smtpCO.toString()+" for the address " + ip.getAddress());
+				smtpCO.setServerResponse("Email service exists, user not verified");
+				System.out.println(smtpCO.toString() + " for the address " + ip.getAddress());
 				return smtpCO;
 			}
-			
+
 			smtpCO.setStatus("Success");
 			smtpCO.setAction("Terminate");
-			smtpCO.setServerResponse(SmtpResponseValidators.whatsTheStatus(res));
-			System.out.println(smtpCO.toString()+" for the address " + ip.getAddress());
+			smtpCO.setServerResponse("Email Service exists and is deliverable");
+			System.out.println(smtpCO.toString() + " for the address " + ip.getAddress());
 
 		} catch (Exception e) {
-			
+
 			smtpCO.setStatus("Failure");
 			smtpCO.setAction("Proceed");
-		
-			System.out.println(smtpCO.toString()+" for the address " + ip.getAddress());
+
+			System.out.println(smtpCO.toString() + " for the address " + ip.getAddress());
 			System.out.println("[mail validation] remote mail validation error. Accepting email anyway: email="
 					+ ip.getAddress() + " - " + e.getMessage());
 		}
 		return smtpCO;
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-
-
-
-
-    
-
-
-
-
- 
 
 }

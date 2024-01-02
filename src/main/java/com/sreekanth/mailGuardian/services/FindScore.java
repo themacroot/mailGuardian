@@ -75,12 +75,12 @@ public class FindScore {
 			SMTPMail smtpMail = new SMTPMail();
 			smtpco = smtpMail.ConnecttoSMTP(smtpci);
 			op.increaseScore(10);
-			op.setRemarks(smtpco.getServerResponse());
+			op.addRemarks(smtpco.getServerResponse());
 
 		} else {
 
 			op.decreaseScore(10);
-			op.setRemarks("No MX Record Exists");
+			op.addRemarks("No MX Record Exists");
 			op.setStatus("Failed");
 			op.setComments("Decline");
 			return op;
@@ -95,7 +95,7 @@ public class FindScore {
 		} else {
 
 			op.decreaseScore(10);
-			op.setRemarks("No DMARC Record Exists");
+			op.addRemarks("No DMARC Record Exists");
 			return op;
 
 		}
@@ -108,22 +108,24 @@ public class FindScore {
 		} else {
 
 			op.decreaseScore(10);
-			op.setRemarks("No SPFR Record Exists");
-			return op;
+			op.addRemarks("No SPFR Record Exists");
 
 		}
+		String tld[] = ip.getDomain().toString().split("\\.");
+		System.out.println(tld[1]);
+		if (tld[1].equals("com") || tld[1].equals("edu")) {
+			if (sv.creationbeforeXYears(ip.getDomain(), 4)) {
 
-		if (sv.creationbeforeXYears(ip.getDomain(), 4)) {
+				op.increaseScore(10);
+				op.addRemarks("Domain created before 4 years");
 
-			op.increaseScore(10);
-			op.addRemarks("Domain created before 4 years");
+			} else {
 
-		} else {
+				op.decreaseScore(10);
+				op.addRemarks("Domain Creted within 4 Years, chances of burner bomain");
+				return op;
 
-			op.decreaseScore(10);
-			op.setRemarks("Domain Creted within 4 Years, chances of burner bomain");
-			return op;
-
+			}
 		}
 
 		if (trieSearchService.searchInTrieSpam(ip.getDomain())) {
