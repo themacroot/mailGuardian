@@ -290,14 +290,16 @@ public class ServerValidator {
 		return false;
 	}
 
-	public static final String WHOIS_SERVER = "whois.internic.net";
+	//public static final String WHOIS_SERVER = "whois.internic.net";whois.iana.org
+	
 	public static final int WHOIS_PORT = 43;
 
 	public boolean creationbeforeXYears(String domain,int x) throws Exception {
 
 		WhoisClient whoisClient = new WhoisClient();
-		whoisClient.connect(WHOIS_SERVER, WHOIS_PORT);
+		whoisClient.connect("whois.internic.net", WHOIS_PORT);
 		String results = whoisClient.query(domain);
+		System.out.println(results);
 		whoisClient.disconnect();
 		String res[] = results.split("URL of the ICANN");
 		String reqData[] = res[0].toString().split("\n");

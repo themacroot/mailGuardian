@@ -13,7 +13,7 @@ class ServerValidatorTest {
 
 	ServerValidator serverValidator = new ServerValidator();
 	String invalidEmail = "";
-	String validEmail = "google.com";
+	String validEmail = "ubinert.com";
 	String exceptionEmail = "";
 
 	@Test

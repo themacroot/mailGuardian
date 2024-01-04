@@ -5,21 +5,22 @@ package com.sreekanth.mailGuardian.models;
 public class RiskCalculatedOutput {
 
 	
-	String comments;
+	String reputation;
 	int score;
 	String status;
 	String remarks;
+	MailAttributes ma = new MailAttributes();
 	/**
-	 * @return the comments
+	 * @return the reputation
 	 */
-	public String getComments() {
-		return comments;
+	public String getReputation() {
+		return reputation;
 	}
 	/**
-	 * @param comments the comments to set
+	 * @param reputation the reputation to set
 	 */
-	public void setComments(String comments) {
-		this.comments = comments;
+	public void setReputation(String reputation) {
+		this.reputation = reputation;
 	}
 	/**
 	 * @return the score
@@ -34,13 +35,25 @@ public class RiskCalculatedOutput {
 		this.score = score;
 	}
 	
-	public void increaseScore(int score) {
-		this.score = this.score + score;
+	/**
+	 * @param score to be increased
+	 */
+	public void incrementScore(int score) {
+		this.score =this.score+score;
 	}
 	
-	public void decreaseScore(int score) {
-		this.score = this.score - score;
+	/**
+	 * @param score to be decreased
+	 */
+	public void decrementScore(int score) {
+		this.score =this.score+score;
 	}
+	
+	
+	
+	
+	
+	
 	/**
 	 * @return the status
 	 */
@@ -65,26 +78,33 @@ public class RiskCalculatedOutput {
 	public void setRemarks(String remarks) {
 		this.remarks = remarks;
 	}
-	
-	public void addRemarks(String remarks) {
-		this.remarks = this.remarks + " | " + remarks;
+	/**
+	 * @return the ma
+	 */
+	public MailAttributes getMa() {
+		return ma;
 	}
-	
-
-	public RiskCalculatedOutput(String comments, int score, String status, String remarks) {
+	/**
+	 * @param ma the ma to set
+	 */
+	public void setMa(MailAttributes ma) {
+		this.ma = ma;
+	}
+	public RiskCalculatedOutput(String reputation, int score, String status, String remarks, MailAttributes ma) {
 		super();
-		this.comments = comments;
+		this.reputation = reputation;
 		this.score = score;
 		this.status = status;
 		this.remarks = remarks;
-	}
-	public RiskCalculatedOutput() {
-		// TODO Auto-generated constructor stub
+		this.ma = ma;
 	}
 	@Override
 	public String toString() {
-		return "RiskCalculatedOutput [comments=" + comments + ", score=" + score + ", status=" + status + ", remarks="
-				+ remarks + "]";
+		return "RiskCalculatedOutput [reputation=" + reputation + ", score=" + score + ", status=" + status
+				+ ", remarks=" + remarks + ", ma=" + ma + "]";
+	}
+	public RiskCalculatedOutput() {
+		super();
 	}
 	
 	

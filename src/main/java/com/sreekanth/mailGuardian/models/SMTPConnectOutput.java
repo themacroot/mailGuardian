@@ -5,6 +5,7 @@ public class SMTPConnectOutput {
 	String serverResponse;
 	String status;
 	String action;
+	boolean mailboxExists;
 	/**
 	 * @return the serverResponse
 	 */
@@ -41,11 +42,34 @@ public class SMTPConnectOutput {
 	public void setAction(String action) {
 		this.action = action;
 	}
+	/**
+	 * @return the mailboxExists
+	 */
+	public boolean isMailboxExists() {
+		return mailboxExists;
+	}
+	/**
+	 * @param mailboxExists the mailboxExists to set
+	 */
+	public void setMailboxExists(boolean mailboxExists) {
+		this.mailboxExists = mailboxExists;
+	}
+	public SMTPConnectOutput(String serverResponse, String status, String action, boolean mailboxExists) {
+		super();
+		this.serverResponse = serverResponse;
+		this.status = status;
+		this.action = action;
+		this.mailboxExists = mailboxExists;
+	}
+	public SMTPConnectOutput() {
+		super();
+	}
 	@Override
 	public String toString() {
 		return "SMTPConnectOutput [serverResponse=" + serverResponse + ", status=" + status + ", action=" + action
-				+ "]";
+				+ ", mailboxExists=" + mailboxExists + "]";
 	}
+
 	
 	
 

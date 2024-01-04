@@ -7,10 +7,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.sreekanth.mailGuardian.constants.EmailDomains;
+import com.sreekanth.mailGuardian.models.MailAttributes;
 import com.sreekanth.mailGuardian.models.RiskCalculateInput;
 import com.sreekanth.mailGuardian.models.RiskCalculatedOutput;
 import com.sreekanth.mailGuardian.models.SMTPConnectInput;
 import com.sreekanth.mailGuardian.models.SMTPConnectOutput;
+import com.sreekanth.mailGuardian.utils.RandomEmailGenerator;
 import com.sreekanth.mailGuardian.validators.SMTPMail;
 import com.sreekanth.mailGuardian.validators.ServerValidator;
 import com.sreekanth.mailGuardian.validators.SyntaxValidator;
@@ -27,101 +30,85 @@ public class FindScore {
 	}
 
 	@Autowired
-	ServerValidator sv;
+	ServerValidator serverValidator;
 
-	RiskCalculatedOutput op = new RiskCalculatedOutput();
+	MailAttributes ea = new MailAttributes();
 
-	public RiskCalculatedOutput findRiskScore(RiskCalculateInput ip) throws Exception {
-
+	public MailAttributes findRiskScore(RiskCalculateInput ip) throws Exception {
+		logger.info("Starting Validation of " + ip.getEmail() + " ~ " + ip.getTrace());
 		if (SyntaxValidator.isEmailSyntaxValid(ip.getEmail())) {
-			op.setScore(10);
-			op.setRemarks("Email Syntax is Valid");
+			ea.setSyntaxValid(true);
+
+			logger.info("Syntax is Valid for " + ip.getEmail() + " ~ " + ip.getTrace());
 		} else {
-			op.setScore(0);
-			op.setRemarks("Email Syntax is Invalid");
-			op.setStatus("Failed");
-			op.setComments("Decline");
-			return op;
+			ea.setSyntaxValid(false);
+			return ea;
 		}
 
-		if (sv.doesDNSRecordExist(ip.getDomain())) {
-
-			op.increaseScore(10);
-			op.addRemarks("DNS exists for the Domain");
+		if (serverValidator.doesDNSRecordExist(ip.getDomain())) {
+			ea.setDnsExists(true);
 
 		} else {
-
-			op.decreaseScore(0);
-			op.addRemarks("DNS doesnt exists for the Domain");
-			op.setStatus("Failed");
-			op.setComments("Decline");
-			return op;
-
+			ea.setDnsExists(false);
 		}
 
-		if (sv.doesMXRecordExist(ip.getDomain())) {
-			SMTPConnectInput smtpci = new SMTPConnectInput();
+		if (serverValidator.doesMXRecordExist(ip.getDomain())) {
+			ea.setMxExists(true);
 			SMTPConnectOutput smtpco = new SMTPConnectOutput();
-			op.increaseScore(10);
-			op.addRemarks("MX Record Exists");
-
-			ArrayList mxList = null;
-			mxList = sv.getMX(ip.getDomain().toString());
-			smtpci.setAddress(ip.getEmail());
-			smtpci.setDomain(ip.getDomain());
-			smtpci.setFromEmail("themacroot@gmail.com");
-			smtpci.setFromDomain("gmail.com");
-			smtpci.setMxAddr(mxList.get(0).toString());
 			SMTPMail smtpMail = new SMTPMail();
-			smtpco = smtpMail.ConnecttoSMTP(smtpci);
-			op.increaseScore(10);
-			op.addRemarks(smtpco.getServerResponse());
-
+			ArrayList mxList = null;
+			if (EmailDomains.getDomains().contains(ip.getDomain())) {
+				ea.setFreeEmail(true);
+				mxList = serverValidator.getMX(ip.getDomain().toString());
+				SMTPConnectInput smtpci = new SMTPConnectInput(ip.getEmail(), ip.getDomain(), "themacroot@gmail.com",
+						"gmail.com", mxList.get(0).toString(), ip.getTrace());
+				smtpco = smtpMail.ConnecttoSMTP(smtpci);
+				if (smtpco.isMailboxExists()) {
+					ea.setMailboxExists(true);
+				} else {
+					ea.setMailboxExists(false);
+				}
+			} else {
+				mxList = serverValidator.getMX(ip.getDomain().toString());
+				SMTPConnectInput smtpci = new SMTPConnectInput(ip.getEmail(), ip.getDomain(), "themacroot@gmail.com",
+						"gmail.com", mxList.get(0).toString(), ip.getTrace());
+				smtpco = smtpMail.ConnecttoSMTP(smtpci);
+				if (smtpco.isMailboxExists()) {
+					ea.setMailboxExists(true);
+					smtpci.setAddress(RandomEmailGenerator.generateRandomEmail(7) + "@" + ip.getDomain());
+					smtpco = smtpMail.ConnecttoSMTP(smtpci);
+					if (smtpco.isMailboxExists())
+						ea.setCatchall(true);
+					ea.setCatchall(false);
+				}
+			}
 		} else {
-
-			op.decreaseScore(10);
-			op.addRemarks("No MX Record Exists");
-			op.setStatus("Failed");
-			op.setComments("Decline");
-			return op;
-
+			ea.setMxExists(false);
+			return ea;
 		}
 
-		if (sv.doesDmarcRecordExist(ip.getDomain())) {
-
-			op.increaseScore(10);
-			op.addRemarks("DMARC Record Exists");
-
+		if (serverValidator.doesDmarcRecordExist(ip.getDomain())) {
+			ea.setDmarcExists(true);
 		} else {
-
-			op.decreaseScore(10);
-			op.addRemarks("No DMARC Record Exists");
-			return op;
-
+			ea.setDmarcExists(false);
 		}
-
-		if (sv.doesSPFRecordExist(ip.getDomain())) {
-
-			op.increaseScore(10);
-			op.addRemarks("SPFR Record Exists");
-
+		if (serverValidator.doesSPFRecordExist(ip.getDomain())) {
+			ea.setSpfExists(true);
 		} else {
-
-			op.decreaseScore(10);
-			op.addRemarks("No SPFR Record Exists");
-
+			ea.setSpfExists(false);
 		}
+		
 		String tld[] = ip.getDomain().toString().split("\\.");
 		System.out.println(tld[1]);
 		if (tld[1].equals("com") || tld[1].equals("edu")) {
-			if (sv.creationbeforeXYears(ip.getDomain(), 4)) {
+			if (serverValidator.creationbeforeXYears(ip.getDomain(), 4)) {
 
 				op.increaseScore(10);
 				op.addRemarks("Domain created before 4 years");
 
 			} else {
 
-				op.decreaseScore(10);
+				op.decrementScore(10);
 				op.addRemarks("Domain Creted within 4 Years, chances of burner bomain");
 				return op;
 
@@ -130,7 +117,7 @@ public class FindScore {
 
 		if (trieSearchService.searchInTrieSpam(ip.getDomain())) {
 
-			op.decreaseScore(10);
+			op.decrementScore(10);
 			op.addRemarks("Domain flagged spam");
 		} else {
 
@@ -142,7 +129,7 @@ public class FindScore {
 			op.increaseScore(10);
 			op.addRemarks("Not a disposible mail");
 		} else {
-			op.decreaseScore(20);
+			op.decrementScore(20);
 			op.addRemarks("Disposible mail");
 			op.setStatus("Failed");
 			op.setComments("Decline");

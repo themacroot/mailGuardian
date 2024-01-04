@@ -9,21 +9,39 @@ public class SMTPConnectInput {
 	String fromEmail;
 	String fromDomain;
 	String mxAddr;
+	String trace;
 	
 
 	
 	
 	
-	public SMTPConnectInput(String address, String domain, String fromEmail, String fromDomain, String mxAddr) {
+	public SMTPConnectInput(String address, String domain, String fromEmail, String fromDomain, String mxAddr,String trace) {
 		super();
 		this.address = address;
 		this.domain = domain;
 		this.fromEmail = fromEmail;
 		this.fromDomain = fromDomain;
 		this.mxAddr = mxAddr;
+		this.trace = trace;
 	}
 	public SMTPConnectInput() {
 		// TODO Auto-generated constructor stub
+	}
+	
+	
+	
+	
+	/**
+	 * @return the trace
+	 */
+	public String getTrace() {
+		return trace;
+	}
+	/**
+	 * @param trace the trace to set
+	 */
+	public void setTrace(String trace) {
+		this.trace = trace;
 	}
 	/**
 	 * @return the address
