@@ -69,7 +69,8 @@ public final class SMTPMail {
 
 				// Log connection response
 				response = httpUtils.hear(reader);
-				logger.info(Logging.INVALID_RESPONSE_LOG + Logging.TRACE_SEPARATOR + ip.getTrace());
+				logger.info(Logging.VALID_RESPONSE_LOG + ip.getDomain() + " --> "
+						+ SmtpResponseValidators.whatsTheStatus(response)+" "+ Logging.TRACE_SEPARATOR + ip.getTrace());
 
 				// Handle invalid response
 				if (response != 220) {
@@ -85,7 +86,8 @@ public final class SMTPMail {
 				logger.info(Logging.EHLO_LOG + Logging.TRACE_SEPARATOR + ip.getTrace());
 				httpUtils.say(writer, "EHLO " + ip.getFromDomain());
 				response = httpUtils.hear(reader);
-				logger.info(Logging.INVALID_RESPONSE_LOG + Logging.TRACE_SEPARATOR + ip.getTrace());
+				logger.info(Logging.VALID_RESPONSE_LOG + ip.getDomain() + " --> "
+						+ SmtpResponseValidators.whatsTheStatus(response)+" "+ Logging.TRACE_SEPARATOR + ip.getTrace());
 
 				// Handle invalid response
 				if (response != 250) {
@@ -101,7 +103,8 @@ public final class SMTPMail {
 				logger.info(Logging.MAIL_FROM_LOG + Logging.TRACE_SEPARATOR + ip.getTrace());
 				httpUtils.say(writer, "MAIL FROM: <" + ip.getFromEmail() + ">");
 				response = httpUtils.hear(reader);
-				logger.info(Logging.INVALID_RESPONSE_LOG + Logging.TRACE_SEPARATOR + ip.getTrace());
+				logger.info(Logging.VALID_RESPONSE_LOG + ip.getDomain() + " --> "
+						+ SmtpResponseValidators.whatsTheStatus(response)+" "+ Logging.TRACE_SEPARATOR + ip.getTrace());
 
 				// Handle sender rejection
 				if (response != 250) {
@@ -117,7 +120,8 @@ public final class SMTPMail {
 				logger.info(Logging.RCPT_TO_LOG + Logging.TRACE_SEPARATOR + ip.getTrace());
 				httpUtils.say(writer, "RCPT TO: <" + ip.getAddress() + ">");
 				response = httpUtils.hear(reader);
-				logger.info(Logging.INVALID_RESPONSE_LOG + Logging.TRACE_SEPARATOR + ip.getTrace());
+				logger.info(Logging.VALID_RESPONSE_LOG + ip.getDomain() + " --> "
+						+ SmtpResponseValidators.whatsTheStatus(response)+" "+ Logging.TRACE_SEPARATOR + ip.getTrace());
 
 				// Resetting and Closing Connections
 				httpUtils.say(writer, Literals.RSET_COMMAND);

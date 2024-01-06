@@ -7,6 +7,7 @@ public class Logging {
 	public static final String YAHOO_MAIL_IS_LOG ="Yahoo username is ";
 	public static final String DOMAIN_YAHOO= "Domain is Yahoo." ;
 	public static final String TRACE_SEPARATOR = " ~ ";
+	public static final String VALID_RESPONSE_LOG = "Response from ";
 	public static final String INVALID_RESPONSE_LOG = "Invalid response";
 	public static final String FOR_THE_ADD = " for the address ";
 	public static final String STOPPING_VALIDATIONS_LOG = "Stopping further validations.";

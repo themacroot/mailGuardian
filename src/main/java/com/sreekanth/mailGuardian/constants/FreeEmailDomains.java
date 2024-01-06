@@ -2,7 +2,7 @@ package com.sreekanth.mailGuardian.constants;
 import java.util.Arrays;
 import java.util.List;
 
-public class EmailDomains {
+public class FreeEmailDomains {
 
     private static final List<String> domains = Arrays.asList(
             /* Default domains included */

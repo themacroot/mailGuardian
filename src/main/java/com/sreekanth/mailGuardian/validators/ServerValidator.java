@@ -23,12 +23,17 @@ import org.xbill.DNS.Resolver;
 import org.xbill.DNS.SimpleResolver;
 import org.xbill.DNS.TXTRecord;
 
+import java.io.IOException;
 import java.net.Inet4Address;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import com.sreekanth.mailGuardian.utils.DateUtil;
+
 /**
  * The ServerValidator class provides methods to validate and check various
  * aspects related to email servers and DNS records.
@@ -290,25 +295,69 @@ public class ServerValidator {
 		return false;
 	}
 
-	//public static final String WHOIS_SERVER = "whois.internic.net";whois.iana.org
-	
+	public static final String WHOIS_SERVER_ROOT = "whois.iana.org";
+
 	public static final int WHOIS_PORT = 43;
 
-	public boolean creationbeforeXYears(String domain,int x) throws Exception {
+	public boolean creationbeforeXYears(String domain, int x) throws Exception {
+
+
+		
+		String referrer  = getReferrer(getWhoisData(domain,WHOIS_SERVER_ROOT));
+		System.out.println("refferrer is  -->" + referrer);
+		String creationDate = getCreationDate(getWhoisData(domain,referrer));
+		System.out.println("credate is  -->" + creationDate);
+		Date creationDateType= DateUtil.parseDateString(creationDate);
+		return !DateUtil.isWithinXYears(creationDateType, x);
+		
+	}
+
+	public String getWhoisData(String domain, String whoisHostName) throws SocketException, IOException {
 
 		WhoisClient whoisClient = new WhoisClient();
-		whoisClient.connect("whois.internic.net", WHOIS_PORT);
+		whoisClient.connect(whoisHostName, WHOIS_PORT);
 		String results = whoisClient.query(domain);
 		System.out.println(results);
 		whoisClient.disconnect();
-		String res[] = results.split("URL of the ICANN");
-		String reqData[] = res[0].toString().split("\n");
-		String vectorize[] = reqData[5].toString().split(" ");
-		System.out.println(vectorize[5].toString());
-		Date creationDate = DateUtil.parseDateString(vectorize[5].toString());
-		return  !DateUtil.isWithinXYears(creationDate,x);
+		return results;
 
-		
 	}
+	
+	public String getReferrer(String whoisResult) {
+
+		String refererPattern = "refer:\\s+(\\S+)";
+		Pattern pattern = Pattern.compile(refererPattern);
+		Matcher matcher = pattern.matcher(whoisResult);
+
+		if (matcher.find()) {
+			String refererValue = matcher.group(1);
+			System.out.println("Referer: --->" + refererValue);
+			return refererValue;
+		} else {
+			System.out.println("Referer not found in IANA WHOIS information");
+			return "Not Found";
+		}
+
+	}
+
+	public String getCreationDate(String whoisResult) {
+
+		String creationDatePattern = "Creation Date: (\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z)";
+		Pattern pattern = Pattern.compile(creationDatePattern);
+		Matcher matcher = pattern.matcher(whoisResult);
+
+		if (matcher.find()) {
+			String creationDateValue = matcher.group(1);
+			System.out.println("Creation Date: " + creationDateValue);
+			return creationDateValue;
+		} else {
+			System.out.println("Creation Date not found in WHOIS information");
+			return "Not Found";
+		}
+		
+
+	}
+
+
 
 }

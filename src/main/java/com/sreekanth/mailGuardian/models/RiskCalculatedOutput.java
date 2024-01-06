@@ -34,25 +34,7 @@ public class RiskCalculatedOutput {
 	public void setScore(int score) {
 		this.score = score;
 	}
-	
-	/**
-	 * @param score to be increased
-	 */
-	public void incrementScore(int score) {
-		this.score =this.score+score;
-	}
-	
-	/**
-	 * @param score to be decreased
-	 */
-	public void decrementScore(int score) {
-		this.score =this.score+score;
-	}
-	
-	
-	
-	
-	
+
 	
 	/**
 	 * @return the status
@@ -104,7 +86,10 @@ public class RiskCalculatedOutput {
 				+ ", remarks=" + remarks + ", ma=" + ma + "]";
 	}
 	public RiskCalculatedOutput() {
-		super();
+
+	}
+	public RiskCalculatedOutput(String string, int i, String string2, String string3) {
+		// TODO Auto-generated constructor stub
 	}
 	
 	

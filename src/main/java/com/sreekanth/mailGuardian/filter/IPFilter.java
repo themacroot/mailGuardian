@@ -19,7 +19,7 @@ public class IPFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         System.out.println("Inside Once Per Request Filter originated by request {}" + request.getLocalAddr());
-        if(request.getLocalAddr().equals("0:0:0:0:0:0:0:1")) {
+        if(request.getLocalAddr().equals("0:0:0:0:0:0:0:1")||request.getLocalAddr().equals("127.0.0.1")) {
         filterChain.doFilter(request, response);
         }
         else {
