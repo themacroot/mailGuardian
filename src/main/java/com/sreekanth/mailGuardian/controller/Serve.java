@@ -5,6 +5,9 @@
 
 package com.sreekanth.mailGuardian.controller;
 
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +26,6 @@ import com.sreekanth.mailGuardian.services.FindAttributes;
 import com.sreekanth.mailGuardian.services.GenerateOutput;
 import com.sreekanth.mailGuardian.services.TrieSearchService;
 
-import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 public class Serve {
