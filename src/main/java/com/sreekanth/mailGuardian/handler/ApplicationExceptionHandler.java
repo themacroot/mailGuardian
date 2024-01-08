@@ -38,6 +38,14 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
 	        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 	    }
 	 
+	 @ExceptionHandler(MailBoxDoesntExist.class)
+	    public ResponseEntity<?> handleMailBoxDoesntExist(
+	            final ApplicationException exception, final HttpServletRequest request){
+	
+	        ApiError response = new ApiError("Mailbox Doesnt Exist","Failed",LocalDateTime.now().toString());
+	        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+	    }
+	 
 	 
 	@ExceptionHandler({Exception.class})
 	public final ResponseEntity<?> handleException( Exception ex) {

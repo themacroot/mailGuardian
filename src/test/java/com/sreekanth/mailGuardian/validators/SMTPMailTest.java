@@ -21,11 +21,12 @@ class SMTPMailTest {
 	        // Arrange
 		  
 		  ArrayList mxList = null;
+		  SMTPMail nm = new SMTPMail();
 		  SMTPConnectOutput actualOutput  = new SMTPConnectOutput();
 				try {
 					mxList = sv.getMX("sib.co.in");
-					SMTPConnectInput input = new SMTPConnectInput("cyrildavis@sib.co.in", "sib.co.in", "themacroot@gmail.com","gmail.com",mxList.get(0).toString());
-					actualOutput = SMTPMail.ConnecttoSMTP(input);
+					SMTPConnectInput input = new SMTPConnectInput("chatbot@gmail.com", "gmail.com", "themacroot@gmail.com","gmail.com",mxList.get(0).toString(),"sfdsfsdf");
+					actualOutput = nm.ConnecttoSMTP(input);
 				} catch (NamingException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

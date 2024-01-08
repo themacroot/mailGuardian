@@ -5,7 +5,7 @@ public class SMTPConnectOutput {
 	String serverResponse;
 	String status;
 	String action;
-	boolean mailboxExists;
+	String mailboxExists;
 	/**
 	 * @return the serverResponse
 	 */
@@ -45,16 +45,16 @@ public class SMTPConnectOutput {
 	/**
 	 * @return the mailboxExists
 	 */
-	public boolean isMailboxExists() {
+	public String getMailboxExists() {
 		return mailboxExists;
 	}
 	/**
 	 * @param mailboxExists the mailboxExists to set
 	 */
-	public void setMailboxExists(boolean mailboxExists) {
+	public void setMailboxExists(String mailboxExists) {
 		this.mailboxExists = mailboxExists;
 	}
-	public SMTPConnectOutput(String serverResponse, String status, String action, boolean mailboxExists) {
+	public SMTPConnectOutput(String serverResponse, String status, String action, String mailboxExists) {
 		super();
 		this.serverResponse = serverResponse;
 		this.status = status;
@@ -62,7 +62,7 @@ public class SMTPConnectOutput {
 		this.mailboxExists = mailboxExists;
 	}
 	public SMTPConnectOutput() {
-		super();
+		// TODO Auto-generated constructor stub
 	}
 	@Override
 	public String toString() {
@@ -70,7 +70,7 @@ public class SMTPConnectOutput {
 				+ ", mailboxExists=" + mailboxExists + "]";
 	}
 
-	
+
 	
 
 }

@@ -28,9 +28,14 @@ import jakarta.servlet.http.HttpServletRequest;
 @RestController
 public class Serve {
 
+	TrieSearchService trieSearchService = null;
 	@Autowired
 	private FindAttributes generator;
 	
+	@Autowired
+	public void TrieController(TrieSearchService trieSearchService) {
+		this.trieSearchService = trieSearchService;
+	}
 	
 	private static Logger logger = LoggerFactory.getLogger("AUDIT");
 
@@ -43,7 +48,7 @@ public class Serve {
 	@GetMapping(value = "/email/{id}", produces = "application/json")
 	public @ResponseBody ResponseEntity<RiskCalculatedOutput> getScore(HttpServletRequest req, @PathVariable String id)
 			throws Exception {
-
+		GenerateOutput generateOutput = new GenerateOutput();
 		// Log incoming request details
 		logger.info("Request from IP --> " + req.getRemoteAddr() + "| With session --> " + req.getSession().getId()
 				+ "| Request body --> " + id);
@@ -57,7 +62,7 @@ public class Serve {
 				.findAttributes(new RiskCalculateInput(id, domain, req.getSession().getId()));
 		
 	
-		RiskCalculatedOutput op = GenerateOutput.GenerateOutput(mailAttribute);
+		RiskCalculatedOutput op = generateOutput.GenerateOutput(mailAttribute);
 		//Generate riskscore and reputation
 		// Log outgoing response details
 		logger.info("Request from IP --> " + req.getRemoteAddr() + "| With session --> " + req.getSession().getId()

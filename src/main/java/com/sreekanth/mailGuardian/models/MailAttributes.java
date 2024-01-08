@@ -8,7 +8,7 @@ public class MailAttributes {
 	public boolean syntaxValid = false;
 	public boolean dnsExists = false;
 	public boolean mxExists = false;
-	public boolean mailboxExists = false;
+	public Boolean mailboxExists = false;
 	public boolean catchall = true;
 	public boolean dmarcExists = false;
 	public boolean spfExists = false;
@@ -56,13 +56,13 @@ public class MailAttributes {
 	/**
 	 * @return the mailboxExists
 	 */
-	public boolean isMailboxExists() {
+	public Boolean isMailboxExists() {
 		return mailboxExists;
 	}
 	/**
 	 * @param mailboxExists the mailboxExists to set
 	 */
-	public void setMailboxExists(boolean mailboxExists) {
+	public void setMailboxExists(Boolean mailboxExists) {
 		this.mailboxExists = mailboxExists;
 	}
 	/**

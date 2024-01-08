@@ -44,7 +44,7 @@ public final class SMTPMail {
 					smtpCO.setStatus(Literals.SUCCESS);
 					smtpCO.setAction(Literals.TERMINATE);
 					smtpCO.setServerResponse(Literals.MAILBOX_EXIST_LOG);
-					smtpCO.setMailboxExists(true);
+					smtpCO.setMailboxExists("true");
 					logger.info(smtpCO.toString() + Logging.FOR_THE_ADD + ip.getAddress() + Logging.TRACE_SEPARATOR
 							+ ip.getTrace());
 					return smtpCO;
@@ -52,7 +52,7 @@ public final class SMTPMail {
 					smtpCO.setStatus(Literals.FAILURE);
 					smtpCO.setAction(Literals.TERMINATE);
 					smtpCO.setServerResponse(Literals.MAILBOX_DOES_NOT_EXIST_LOG);
-					smtpCO.setMailboxExists(false);
+					smtpCO.setMailboxExists("false");
 					logger.info(smtpCO.toString() + Logging.FOR_THE_ADD + ip.getAddress() + Logging.TRACE_SEPARATOR
 							+ ip.getTrace());
 					return smtpCO;
@@ -69,7 +69,7 @@ public final class SMTPMail {
 
 				// Log connection response
 				response = httpUtils.hear(reader);
-				logger.info(Logging.VALID_RESPONSE_LOG + ip.getDomain() + " --> "
+				logger.info(Logging.VALID_RESPONSE_LOG +"-->"+response+"<--"+ ip.getDomain() + " --> "
 						+ SmtpResponseValidators.whatsTheStatus(response)+" "+ Logging.TRACE_SEPARATOR + ip.getTrace());
 
 				// Handle invalid response
@@ -135,7 +135,7 @@ public final class SMTPMail {
 
 				// Handle mailbox does not exist
 				if (response == 550) {
-					smtpCO.setMailboxExists(false);
+					smtpCO.setMailboxExists("false");
 					smtpCO.setStatus(Literals.FAILURE);
 					smtpCO.setAction(Literals.TERMINATE);
 					smtpCO.setServerResponse(Literals.MAILBOX_DOES_NOT_EXIST_LOG);
@@ -145,14 +145,14 @@ public final class SMTPMail {
 
 				// Handle mailbox exists
 				if (response == 250) {
-					smtpCO.setMailboxExists(true);
+					smtpCO.setMailboxExists("true");
 					smtpCO.setStatus(Literals.SUCCESS);
 					smtpCO.setAction(Literals.TERMINATE);
 					smtpCO.setServerResponse(Literals.MAILBOX_EXIST_LOG);
 					logger.info(smtpCO.toString() + Logging.FOR_THE_ADD + ip.getAddress()+ Logging.TRACE_SEPARATOR + ip.getTrace());
 				} else {
 					// Handle not able to verify mailbox
-					smtpCO.setMailboxExists(true);
+					smtpCO.setMailboxExists("Unable to verify");
 					smtpCO.setStatus(Literals.SUCCESS);
 					smtpCO.setAction(Literals.TERMINATE);
 					smtpCO.setServerResponse(Literals.MAILBOX_VERFY_ERR_LOG);
@@ -162,7 +162,7 @@ public final class SMTPMail {
 		} catch (Exception e) {
 			// Handle remote mail validation error
 			smtpCO.setStatus(Literals.FAILURE);
-			smtpCO.setMailboxExists(true);
+			smtpCO.setMailboxExists("Unable to verify");
 			smtpCO.setAction("Proceed");
 			logger.info(smtpCO.toString() +  Logging.FOR_THE_ADD + ip.getAddress()+ Logging.TRACE_SEPARATOR + ip.getTrace());
 			logger.info("Mailbox validation error, accepting email"

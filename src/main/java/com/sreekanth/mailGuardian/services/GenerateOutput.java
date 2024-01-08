@@ -1,19 +1,20 @@
 package com.sreekanth.mailGuardian.services;
 
-import org.springframework.stereotype.Component;
+
 
 import com.sreekanth.mailGuardian.handler.ApplicationException;
+import com.sreekanth.mailGuardian.handler.MailBoxDoesntExist;
 import com.sreekanth.mailGuardian.models.MailAttributes;
 import com.sreekanth.mailGuardian.models.RiskCalculatedOutput;
 
-@Component
+
 public class GenerateOutput {
 
-	int score = 0;
+	static int score = 0;
 	String reputation;
-	String remarks;
+	static String remarks;
 
-	public static RiskCalculatedOutput GenerateOutput(MailAttributes mailAttributes) throws Exception {
+	public  RiskCalculatedOutput GenerateOutput(MailAttributes mailAttributes) throws Exception {
 		RiskCalculatedOutput apiResponse = new RiskCalculatedOutput();
 		try {
 			int score = calculateScore(mailAttributes);
@@ -34,7 +35,7 @@ public class GenerateOutput {
 		return apiResponse;
 	}
 
-	private static int calculateScore(MailAttributes mailAttributes) throws Exception {
+	private  int calculateScore(MailAttributes mailAttributes) throws Exception {
 
 		int score = 0;
 		// Syntax validation
@@ -43,37 +44,65 @@ public class GenerateOutput {
 		}else {
 			throw new ApplicationException()  ;
 		}
+		if(mailAttributes.isMailboxExists() == null) {
+			score += 10;
+			remarks = "Mailbox existance cannot be verified.";
+		}
+		else if (mailAttributes.isMailboxExists()) {
+			score += 20; // Assigning a negative score for non-existent mailboxes
+		}else {
+			throw new MailBoxDoesntExist()  ;
+		}
 
 		// DNS and MX existence
 		if (mailAttributes.isDnsExists() && mailAttributes.isMxExists()) {
-			score += 10;
+			score += 15;
+		}else if ( mailAttributes.isMxExists()) {
+			score += 5;
+		}
+		
+		if (mailAttributes.isCatchall()) {
+			score -= 5;
+			remarks = "Mail Provider catches all emails.";
 		}
 
 		// Presence of DMARC or SPF records
 		if (mailAttributes.isDmarcExists() && mailAttributes.isSpfExists()) {
-			score += 8;
+			score += 10;
+		}else if(mailAttributes.isSpfExists()) {
+			score +=5;
 		}
 
 		// Domain created recently
 		if (mailAttributes.isDomainCreatedRecently()) {
-			score -= 10;
+			score -= 5;
+			remarks += "Domain is created recently which can indicate a disposible Domain.";
+		}else {
+			score +=5;
 		}
 
 		// Negative factors
 		if (mailAttributes.isRoleAccount()) {
-			score -= 10; // Assigning a negative score for role accounts
+			remarks += "The email is flagged as a role account.";
+			score -= 5; // Assigning a negative score for role accounts
 		}
 
-		if (mailAttributes.isDisposible()) {
-			score -= 15; // Assigning a negative score for disposable emails
+		
+		if (mailAttributes.isFreeEmail()) {
+			score += 5; // Assigning a negative score for role accounts
 		}
+		if (mailAttributes.isDisposible()) {
+			remarks += "The email is flagged as a disposible email.";
+			score -= 15; // Assigning a negative score for disposable emails
+		}else {
+			score +=10;
+		}
+
 
 		if (mailAttributes.isSpam()) {
 			score -= 15; // Assigning a negative score for spam emails
-		}
-
-		if (mailAttributes.isMailboxExists()) {
-			score -= 20; // Assigning a negative score for non-existent mailboxes
+		}else {
+			score +=10;
 		}
 
 		// Add more scoring rules as needed
@@ -81,20 +110,20 @@ public class GenerateOutput {
 		return score;
 	}
 
-	private static String categorizeRisk(int score) {
+	private  String categorizeRisk(int score) {
 		// Define your risk categories based on the score
-		if (score >= 0 && score < 10) {
+		if (score >= 75) {
 			return "Low Risk";
-		} else if (score >= 10 && score < 20) {
-			return "Moderate Risk";
+		} else if (score >= 50 && score < 75) {
+			return "Risky";
 		} else {
-			return "High Risk";
+			return "Reject";
 		}
 	}
 
-	private static String setRemarks(MailAttributes mailAttributes) {
+	private  String setRemarks(MailAttributes mailAttributes) {
 
-		return "remarks";
+		return remarks;
 	}
 
 }
