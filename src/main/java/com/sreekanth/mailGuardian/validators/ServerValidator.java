@@ -131,9 +131,10 @@ public class ServerValidator {
 				throw new IllegalStateException();
 			}
 			return record != null && record.length > 0;
-		} catch (TextParseException e) {
+		} catch (Exception e) {
+			return false;
 		}
-		return false;
+		
 	}
 
 	/**

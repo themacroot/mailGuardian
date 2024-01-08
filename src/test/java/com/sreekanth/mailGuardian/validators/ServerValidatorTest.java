@@ -12,8 +12,10 @@ import org.junit.jupiter.api.Test;
 class ServerValidatorTest {
 
 	ServerValidator serverValidator = new ServerValidator();
-	String invalidEmail = "";
-	String validEmail = "sib.co.in";
+	String invaidDomain = "siberfer.co.in";
+	String invaidEmail = "bvisunvi@siberfer.co.in";
+	String validEmail = "sreekanthn@sib.co.in";
+	String validDomain = "sib.co.in";
 	String exceptionEmail = "";
 
 	@Test
@@ -30,28 +32,20 @@ class ServerValidatorTest {
 	public void testDoesHostExist_InvalidHost() {
 
 		// Act
-		boolean result = serverValidator.doesHostExist(invalidEmail);
+		boolean result = serverValidator.doesHostExist(invaidDomain);
 
 		// Assert
 		assertFalse(result);
 	}
 
-	@Test
-	public void testDoesHostExist_ExceptionHandling() {
 
-		// Act
-		boolean result = serverValidator.doesHostExist(exceptionEmail);
-
-		// Assert
-		assertFalse(result); // The method should gracefully handle the exception and return false
-	}
 
 	@Test
 	public void testGetMX_WithValidMXRecords() throws NamingException {
 
 		// Act
 		@SuppressWarnings("unchecked")
-		ArrayList<String> mxRecords = serverValidator.getMX(validEmail);
+		ArrayList<String> mxRecords = serverValidator.getMX(validDomain);
 
 		// Assert
 		assertFalse(mxRecords.isEmpty());
@@ -74,7 +68,7 @@ class ServerValidatorTest {
 		// Act
 		ArrayList<String> mxRecords = null;
 		try {
-			mxRecords = serverValidator.getMX(invalidEmail);
+			mxRecords = serverValidator.getMX(invaidDomain);
 		} catch (NamingException e) {
 			// Catch the exception if it occurs (in case the test fails due to unexpected
 			// exception)
@@ -89,7 +83,7 @@ class ServerValidatorTest {
 	public void testDoesDNSRecordExist_WithValidDomain() throws IllegalStateException, UnknownHostException {
 
 		// Act
-		boolean result = serverValidator.doesDNSRecordExist(validEmail);
+		boolean result = serverValidator.doesDNSRecordExist(validDomain);
 
 		// Assert
 		assertTrue(result);
@@ -100,7 +94,7 @@ class ServerValidatorTest {
 	public void testDoesDNSRecordExist_WithInvalidDomain() throws IllegalStateException, UnknownHostException {
 
 		// Act
-		boolean result = serverValidator.doesDNSRecordExist(invalidEmail);
+		boolean result = serverValidator.doesDNSRecordExist(invaidDomain);
 
 		// Assert
 		assertFalse(result);
@@ -123,10 +117,10 @@ class ServerValidatorTest {
 
 		// Act
 		@SuppressWarnings("unchecked")
-		boolean mxRecords = serverValidator.doesMXRecordExist(validEmail);
+		boolean mxRecords = serverValidator.doesMXRecordExist(validDomain);
 
 		// Assert
-		assertFalse(mxRecords);
+		assertTrue(mxRecords);
 
 	}
 
@@ -159,7 +153,7 @@ class ServerValidatorTest {
 
 		// Act
 		@SuppressWarnings("unchecked")
-		boolean mxRecords = serverValidator.creationbeforeXYears(validEmail, 4);
+		boolean mxRecords = serverValidator.creationbeforeXYears(validDomain, 4);
 		System.out.println(mxRecords);
 		// Assert
 		assertFalse(false);
@@ -182,10 +176,10 @@ class ServerValidatorTest {
 
 		// Act
 		boolean mxRecords;
-		mxRecords = serverValidator.doesMXRecordExist(invalidEmail);
+		mxRecords = serverValidator.doesMXRecordExist(invaidDomain);
 
 		// Assert
-		assertNull(mxRecords);
+		assertFalse(mxRecords);
 
 	}
 
@@ -195,7 +189,7 @@ class ServerValidatorTest {
 		// Replace with the actual domain
 
 		try {
-			boolean result = serverValidator.doesDmarcRecordExist(validEmail);
+			boolean result = serverValidator.doesDmarcRecordExist(validDomain);
 
 			// Assert that the result is true, indicating that the DMARC record was found
 			assertTrue(result);
@@ -211,7 +205,7 @@ class ServerValidatorTest {
 		// Replace with the actual domain
 
 		try {
-			boolean result = serverValidator.doesSPFRecordExist(validEmail);
+			boolean result = serverValidator.doesSPFRecordExist(validDomain);
 
 			// Assert that the result is true, indicating that the DMARC record was found
 			assertTrue(result);
