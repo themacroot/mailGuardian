@@ -20,7 +20,7 @@
 	<groupId>com.sreekanth</groupId>
 	<artifactId>mailGuardian</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>jar</packaging>
+	<packaging>war</packaging>
 	<name>mailGuardian</name>
 	<description>Email risk assessment </description>
 	<properties>

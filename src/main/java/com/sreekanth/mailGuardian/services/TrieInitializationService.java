@@ -26,7 +26,7 @@ public class TrieInitializationService {
     }
 
     public Trie initializeSpamTrieFromURL(String txtUrl) throws IOException {
-    	
+    	System.setProperty("https.protocols", "TLSv1.2");
     	URL url = new URL(txtUrl);
 		Scanner s = new Scanner(url.openStream());
 		while (s.hasNext()) {
@@ -41,7 +41,7 @@ public class TrieInitializationService {
     
     
     public Trie initializeBurnerTrieFromURL(String txtUrl) throws IOException {
-    	
+    	System.setProperty("https.protocols", "TLSv1.2");
     	URL url = new URL(txtUrl);
 		Scanner s = new Scanner(url.openStream());
 		while (s.hasNext()) {

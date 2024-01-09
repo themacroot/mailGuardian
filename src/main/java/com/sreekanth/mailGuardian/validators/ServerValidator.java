@@ -54,7 +54,7 @@ public class ServerValidator {
 		try {
 			Inet4Address.getByName(host);
 		} catch (UnknownHostException e) {
-			System.out.println("[mail validation] host of mail does not exist email=" + email + " - " + e.getMessage());
+			//System.out.println("[mail validation] host of mail does not exist email=" + email + " - " + e.getMessage());
 			return false;
 		}
 		return true;
@@ -91,7 +91,7 @@ public class ServerValidator {
 		while (en.hasMore()) {
 			String mailhost;
 			String x = (String) en.next();
-			System.out.println(x);
+			//System.out.println(x);
 			String f[] = x.split(" ");
 			// THE fix *************
 			if (f.length == 1)
@@ -118,13 +118,13 @@ public class ServerValidator {
 	public boolean doesDNSRecordExist(String domain) throws IllegalStateException, UnknownHostException {
 		try {
 			Resolver resolver = new SimpleResolver();
-			System.out.println("Domain Lookup");
+			//System.out.println("Domain Lookup");
 			Lookup lookup = new Lookup(domain, Type.NS);
 			lookup.setResolver(resolver);
 			Record[] record = lookup.run();
 			for (int i = 0; i < record.length; i++) {
 
-				System.out.println(record[i].rdataToString() + "\n" + record.length);
+				//System.out.println(record[i].rdataToString() + "\n" + record.length);
 
 			}
 			if (lookup.getResult() == Lookup.TRY_AGAIN) {
@@ -160,8 +160,7 @@ public class ServerValidator {
 					MXRecord mx = (MXRecord) r;
 					Record[] result2 = new Lookup(mx.getTarget(), Type.A).run();
 					if (result2 != null && result2.length > 0) {
-						System.out.println("OK! MX: " + mx.getTarget() + " -> "
-								+ ((ARecord) result2[0]).getAddress().getHostAddress());
+						//System.out.println("OK! MX: " + mx.getTarget() + " -> "+ ((ARecord) result2[0]).getAddress().getHostAddress());
 						return true;
 					} else {
 						System.err.println("Fail: could not resolv " + mx.getTarget());
@@ -187,12 +186,12 @@ public class ServerValidator {
 			}
 			if (result != null && result.length > 0) {
 				for (Record r : result) {
-					System.out.println("Loop 1 : " + r.toString());
+					//System.out.println("Loop 1 : " + r.toString());
 					MXRecord mx = (MXRecord) r;
 					Record[] result2 = new Lookup(mx.getTarget(), Type.A).run();
 
 					for (Record rec : result2) {
-						System.out.println("Loop 2 : " + rec.toString());
+						//System.out.println("Loop 2 : " + rec.toString());
 					}
 				}
 			}
@@ -228,7 +227,7 @@ public class ServerValidator {
 			}
 			if (result != null && result.length > 0) {
 				for (Record r : result) {
-					System.out.println(r.toString());
+					//System.out.println(r.toString());
 
 				}
 			}
@@ -258,7 +257,7 @@ public class ServerValidator {
 			for (Record record : records) {
 				if (record instanceof TXTRecord) {
 					TXTRecord txtRecord = (TXTRecord) record;
-					System.out.println(txtRecord.getStrings().get(0));
+					//System.out.println(txtRecord.getStrings().get(0));
 					return true; // Assuming there's only one string in the TXT record
 				}
 			}
@@ -286,7 +285,7 @@ public class ServerValidator {
 
 		if (records != null) {
 			for (Record record : records) {
-				System.out.println(record);
+				//System.out.println(record);
 				if (record.toString().contains("spf")) {
 					return true;
 				}
@@ -305,9 +304,9 @@ public class ServerValidator {
 
 		
 		String referrer  = getReferrer(getWhoisData(domain,WHOIS_SERVER_ROOT));
-		System.out.println("refferrer is  -->" + referrer);
+		//System.out.println("refferrer is  -->" + referrer);
 		String creationDate = getCreationDate(getWhoisData(domain,referrer));
-		System.out.println("credate is  -->" + creationDate);
+		//System.out.println("credate is  -->" + creationDate);
 		Date creationDateType= DateUtil.parseDateString(creationDate);
 		return !DateUtil.isWithinXYears(creationDateType, x);
 		
@@ -318,7 +317,7 @@ public class ServerValidator {
 		WhoisClient whoisClient = new WhoisClient();
 		whoisClient.connect(whoisHostName, WHOIS_PORT);
 		String results = whoisClient.query(domain);
-		System.out.println(results);
+		//System.out.println(results);
 		whoisClient.disconnect();
 		return results;
 
@@ -332,10 +331,10 @@ public class ServerValidator {
 
 		if (matcher.find()) {
 			String refererValue = matcher.group(1);
-			System.out.println("Referer: --->" + refererValue);
+			//System.out.println("Referer: --->" + refererValue);
 			return refererValue;
 		} else {
-			System.out.println("Referer not found in IANA WHOIS information");
+			//System.out.println("Referer not found in IANA WHOIS information");
 			return "Not Found";
 		}
 
@@ -349,10 +348,10 @@ public class ServerValidator {
 
 		if (matcher.find()) {
 			String creationDateValue = matcher.group(1);
-			System.out.println("Creation Date: " + creationDateValue);
+			//System.out.println("Creation Date: " + creationDateValue);
 			return creationDateValue;
 		} else {
-			System.out.println("Creation Date not found in WHOIS information");
+			//System.out.println("Creation Date not found in WHOIS information");
 			return "Not Found";
 		}
 		

@@ -9,9 +9,7 @@ import org.springframework.context.annotation.ComponentScan;
 @ComponentScan(basePackages = {"com.sreekanth.mailGuardian"})
 public class MailGuardianApplication {
 	
-	
-	  @Value("${NAME:World}")
-	  String name;
+
 
 	public static void main(String[] args) {
 		SpringApplication.run(MailGuardianApplication.class, args);
