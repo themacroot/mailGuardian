@@ -34,8 +34,6 @@ public class RiskCalculatedOutput {
 	public void setScore(int score) {
 		this.score = score;
 	}
-
-	
 	/**
 	 * @return the status
 	 */
@@ -63,35 +61,34 @@ public class RiskCalculatedOutput {
 	/**
 	 * @return the mailAttributes
 	 */
-	public MailAttributes getMa() {
+	public MailAttributes getMailAttributes() {
 		return mailAttributes;
 	}
 	/**
-	 * @param ma the ma to set
+	 * @param mailAttributes the mailAttributes to set
 	 */
-	public void setMa(MailAttributes ma) {
-		this.mailAttributes = ma;
+	public void setMailAttributes(MailAttributes mailAttributes) {
+		this.mailAttributes = mailAttributes;
 	}
-	public RiskCalculatedOutput(String reputation, int score, String status, String remarks, MailAttributes ma) {
+	@Override
+	public String toString() {
+		return "RiskCalculatedOutput [reputation=" + reputation + ", score=" + score + ", status=" + status
+				+ ", remarks=" + remarks + ", mailAttributes=" + mailAttributes + "]";
+	}
+	public RiskCalculatedOutput(String reputation, int score, String status, String remarks,
+			MailAttributes mailAttributes) {
 		super();
 		this.reputation = reputation;
 		this.score = score;
 		this.status = status;
 		this.remarks = remarks;
-		this.mailAttributes = ma;
+		this.mailAttributes = mailAttributes;
 	}
-	@Override
-	public String toString() {
-		return "RiskCalculatedOutput [reputation=" + reputation + ", score=" + score + ", status=" + status
-				+ ", remarks=" + remarks + ", ma=" + mailAttributes + "]";
-	}
+	
+	
 	public RiskCalculatedOutput() {
+		super();
 
 	}
-	public RiskCalculatedOutput(String string, int i, String string2, String string3) {
-		// TODO Auto-generated constructor stub
-	}
-	
-	
 	
 } 

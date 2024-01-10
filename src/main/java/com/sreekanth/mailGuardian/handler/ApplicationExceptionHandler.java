@@ -36,7 +36,7 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
 	    public ResponseEntity<?> handleApplicationException(
 	            final ApplicationException exception, final HttpServletRequest request){
 	
-	        ApiError response = new ApiError("You Messed Up! The input Email is wrong","Failed",LocalDateTime.now().toString());
+	        ApiError response = new ApiError("You Messed Up! The input Email is wrong or doesnt exist","Failed",LocalDateTime.now().toString());
 	        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 	    }
 	 

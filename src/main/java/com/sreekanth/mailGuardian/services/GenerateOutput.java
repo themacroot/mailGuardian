@@ -24,7 +24,7 @@ public class GenerateOutput {
 			apiResponse.setRemarks(remarks);
 			apiResponse.setReputation(reputation);
 			
-			apiResponse.setMa(mailAttributes);
+			apiResponse.setMailAttributes(mailAttributes);
 			apiResponse.setStatus("Success");
 
 		} catch (Exception ex) {
@@ -51,7 +51,7 @@ public class GenerateOutput {
 		else if (mailAttributes.isMailboxExists()) {
 			score += 20; // Assigning a negative score for non-existent mailboxes
 		}else {
-			throw new MailBoxDoesntExist()  ;
+			throw new ApplicationException()  ;
 		}
 
 		// DNS and MX existence
