@@ -9,7 +9,7 @@ public class RiskCalculatedOutput {
 	int score;
 	String status;
 	String remarks;
-	MailAttributes ma = new MailAttributes();
+	MailAttributes mailAttributes = new MailAttributes();
 	/**
 	 * @return the reputation
 	 */
@@ -61,16 +61,16 @@ public class RiskCalculatedOutput {
 		this.remarks = remarks;
 	}
 	/**
-	 * @return the ma
+	 * @return the mailAttributes
 	 */
 	public MailAttributes getMa() {
-		return ma;
+		return mailAttributes;
 	}
 	/**
 	 * @param ma the ma to set
 	 */
 	public void setMa(MailAttributes ma) {
-		this.ma = ma;
+		this.mailAttributes = ma;
 	}
 	public RiskCalculatedOutput(String reputation, int score, String status, String remarks, MailAttributes ma) {
 		super();
@@ -78,12 +78,12 @@ public class RiskCalculatedOutput {
 		this.score = score;
 		this.status = status;
 		this.remarks = remarks;
-		this.ma = ma;
+		this.mailAttributes = ma;
 	}
 	@Override
 	public String toString() {
 		return "RiskCalculatedOutput [reputation=" + reputation + ", score=" + score + ", status=" + status
-				+ ", remarks=" + remarks + ", ma=" + ma + "]";
+				+ ", remarks=" + remarks + ", ma=" + mailAttributes + "]";
 	}
 	public RiskCalculatedOutput() {
 
