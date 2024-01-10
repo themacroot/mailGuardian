@@ -10,7 +10,6 @@ import org.springframework.context.annotation.ComponentScan;
 public class MailGuardianApplication {
 	
 
-
 	public static void main(String[] args) {
 		SpringApplication.run(MailGuardianApplication.class, args);
 	}

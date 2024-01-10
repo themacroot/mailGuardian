@@ -23,7 +23,8 @@ public class TrieInitializer implements CommandLineRunner {
    	 String txtUrlBurner ="https://raw.githubusercontent.com/groundcat/disposable-email-domain-list/master/domains.txt";
 
        // Fetch records from the URL and update the Trie
+     trieInitializationService.initializeBurnerTrieFromURL(txtUrlBurner);
        trieInitializationService.initializeSpamTrieFromURL(txtUrlSpam);
-       trieInitializationService.initializeBurnerTrieFromURL(txtUrlBurner);
+     
     }
 }
