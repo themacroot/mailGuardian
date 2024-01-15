@@ -65,6 +65,7 @@ public class FindAttributes {
 
 			if (serverValidator.doesMXRecordExist(ip.getDomain())) {
 				ea.setMxExists(true);
+				ea.setCatchall(false);
 				SMTPConnectOutput smtpco = new SMTPConnectOutput();
 				SMTPMail smtpMail = new SMTPMail();
 				ArrayList mxList = null;
@@ -86,7 +87,6 @@ public class FindAttributes {
 					}
 				} else {
 					ea.setFreeEmail(false);
-					ea.setCatchall(false);
 					logger.info("Email Provider is not free " + ip.getEmail() + " ~ " + ip.getTrace());
 					mxList = serverValidator.getMX(ip.getDomain().toString());
 					SMTPConnectInput smtpci = new SMTPConnectInput(ip.getEmail(), ip.getDomain(),
